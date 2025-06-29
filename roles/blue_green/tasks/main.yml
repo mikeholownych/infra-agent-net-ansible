@@ -7,7 +7,7 @@
     target_color: "{{ 'green' if lb_status.stdout == 'blue' else 'blue' }}"
 
 - name: Deploy application stack to target color namespace
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_name: "app_{{ target_color }}"
     project_src: /srv/orchestrator
     state: present
@@ -27,7 +27,7 @@
   command: "loadbalancer-cli switch --to {{ target_color }}"
 
 - name: Teardown old color environment
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_name: "app_{{ 'blue' if target_color == 'green' else 'green' }}"
     project_src: /srv/orchestrator
     state: absent

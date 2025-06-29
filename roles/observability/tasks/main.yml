@@ -1,12 +1,12 @@
 - name: Deploy Prometheus
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /srv/observability state=present
 
 - name: Wait for Prometheus
   wait_for: host={{ inventory_hostname }} port=9090 timeout=60
 
 - name: Deploy Grafana
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /srv/observability state=present
 
 - name: Wait for Grafana

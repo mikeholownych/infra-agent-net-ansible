@@ -1,5 +1,5 @@
 - name: Deploy billing metrics exporter
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /srv/billing_exporter
     state: present
 
@@ -13,7 +13,7 @@
           - targets: ['localhost:9100']
 
 - name: Reload Prometheus to apply new scrape config
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /srv/observability
     state: present
 

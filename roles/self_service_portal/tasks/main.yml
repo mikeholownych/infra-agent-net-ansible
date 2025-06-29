@@ -13,7 +13,7 @@
     mode: '0644'
 
 - name: Build and deploy portal via Docker Compose
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /srv/self_service_portal
     state: present
     restarted: yes

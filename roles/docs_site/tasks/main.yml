@@ -27,6 +27,6 @@
     chdir: /srv/docs
 
 - name: Deploy documentation to web server
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /srv/docs
     state: present

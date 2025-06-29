@@ -5,7 +5,7 @@
   template: src=templates/docker-compose.yml.j2 dest=/srv/celery/docker-compose.yml
 
 - name: Deploy Celery
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /srv/celery state=present detached=yes
 
 - name: Wait for Celery worker port

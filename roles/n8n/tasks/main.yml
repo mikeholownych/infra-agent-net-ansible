@@ -1,5 +1,5 @@
 - name: Deploy n8n
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /srv/n8n state=present
 
 - name: Wait for n8n

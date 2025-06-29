@@ -12,7 +12,7 @@
     executable: /bin/bash
 
 - name: Deploy Orchestrator to DR cluster
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /srv/orchestrator_dr
     state: present
   vars:
