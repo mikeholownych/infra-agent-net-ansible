@@ -24,7 +24,7 @@ jobs:
           pip install ansible ansible-lint
       - name: Run ansible-lint
         run: |
-          ansible-lint .
+          ansible-lint . --exclude .vault_pass.txt
       - name: Syntax check playbook
         run: |
           ansible-playbook playbook.yml --syntax-check -i inventory/production.yml
