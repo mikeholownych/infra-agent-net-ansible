@@ -56,3 +56,8 @@ Contributions are welcome! Please:
 2. Create a feature branch
 3. Submit a pull request with lint checks passing
 
+
+## Vault Password File
+
+Ansible will look for the vault password file at `.vault_pass.txt` by default. To use vaulted variables,
+create or update this file with your vault password (it is gitignored by default).
