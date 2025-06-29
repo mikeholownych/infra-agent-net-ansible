@@ -4,7 +4,7 @@
     cron:
       minute: "0"
       hour: "2"
-      job: 'pg_dump -h { hostvars["db-01"].ip } -U ai ai_memory > /backups/ai_memory_$(date +"%F").sql'
+      job: 'pg_dump -h {{ hostvars["db-01"].ip }} -U ai ai_memory > /backups/ai_memory_$(date +"%F").sql'
 
 - name: Snapshot Weaviate volume
   shell: zfs snapshot tank/weaviate@$(date +"%Y%m%d")
