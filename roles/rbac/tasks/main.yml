@@ -1,16 +1,16 @@
-- name: Create FastAPI admin user
+# roles/rbac/tasks/main.yml
+---
+- name: Create RBAC admin user
   uri:
-    url: http://{{ hostvars['orchestrator-01'].ip }}:8000/users/
+    url: "{{ rbac_api_url }}/users"
     method: POST
+    user: "admin"
+    password: "changeme"
+    headers:
+      Content-Type: "application/json"
     body_format: json
-    body: {username: admin, password: secret, scopes: [admin]}
+    body:
+      username: "{{ rbac_username }}"
+      roles:
+        - admin
     status_code: 201
-
-- name: Configure Grafana users
-  uri:
-    url: http://{{ hostvars['grafana-01'].ip }}:3000/api/admin/users
-    method: POST
-    user: admin; password: changeme
-    body_format: json
-    body: {name: "admin", email: "admin@example.com"}
-    status_code: 200
