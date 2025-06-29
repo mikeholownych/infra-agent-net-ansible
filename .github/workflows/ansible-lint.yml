@@ -27,4 +27,4 @@ jobs:
           ansible-lint . --exclude .vault_pass.txt
       - name: Syntax check playbook
         run: |
-          ansible-playbook playbook.yml --syntax-check -i inventory/production.yml
+          ansible-playbook --vault-password-file .vault_pass.txt --syntax-check -i inventory/production.yml playbook.yml
