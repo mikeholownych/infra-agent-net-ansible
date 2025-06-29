@@ -1,0 +1,53 @@
+all:
+  hosts:
+    proxmox:
+      ansible_connection: local
+  children:
+    orchestrator:
+      hosts:
+        orchestrator-01:
+          vmid: 101
+          ip: 192.168.100.101
+    celery:
+      hosts:
+        celery-01:
+          vmid: 102
+          ip: 192.168.100.102
+    db:
+      hosts:
+        db-01:
+          vmid: 103
+          ip: 192.168.100.103
+    weaviate:
+      hosts:
+        weaviate-01:
+          vmid: 104
+          ip: 192.168.100.104
+    redis:
+      hosts:
+        redis-01:
+          vmid: 105
+          ip: 192.168.100.105
+    n8n:
+      hosts:
+        n8n-01:
+          vmid: 106
+          ip: 192.168.100.106
+    observability:
+      hosts:
+        prometheus-01:
+          vmid: 107
+          ip: 192.168.100.107
+        grafana-01:
+          vmid: 108
+          ip: 192.168.100.108
+    frontend:
+      hosts:
+        frontend-01:
+          vmid: 109
+          ip: 192.168.100.109
+    billing:
+      hosts:
+        billing-01:
+          vmid: 110
+          ip: 192.168.100.110

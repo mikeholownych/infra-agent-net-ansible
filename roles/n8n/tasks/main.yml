@@ -1,0 +1,6 @@
+- name: Deploy n8n
+  community.docker.docker_compose:
+    project_src: /srv/n8n state=present
+
+- name: Wait for n8n
+  wait_for: host={{ inventory_hostname }} port=5678 timeout=60

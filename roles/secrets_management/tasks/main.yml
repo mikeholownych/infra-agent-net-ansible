@@ -1,0 +1,47 @@
+- name: Install HashiCorp Vault CLI
+  get_url:
+    url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
+    dest: /tmp/vault.zip
+
+- name: Unzip Vault CLI
+  unarchive:
+    src: /tmp/vault.zip
+    dest: /usr/local/bin/
+    remote_src: yes
+
+- name: Authenticate to Vault
+  shell: |
+    vault login {{ vault_token }}
+  environment:
+    VAULT_ADDR: "{{ vault_addr }}"
+  register: vault_login
+  changed_when: false
+
+- name: Retrieve database credentials from Vault
+  hashivault_read:
+    secret: secret/data/db_credentials
+  register: db_creds
+
+- name: Set DB credentials as facts
+  set_fact:
+    db_user: "{{ db_creds.data.data.username }}"
+    db_password: "{{ db_creds.data.data.password }}"
+
+- name: Retrieve ArgoCD credentials from Vault
+  hashivault_read:
+    secret: secret/data/argocd_credentials
+  register: argocd_creds
+
+- name: Set ArgoCD vaulted facts
+  set_fact:
+    vault_argocd_user: "{{ argocd_creds.data.data.username }}"
+    vault_argocd_password: "{{ argocd_creds.data.data.password }}"
+
+- name: Retrieve Slack webhook token from Vault
+  hashivault_read:
+    secret: secret/data/slack
+  register: slack_creds
+
+- name: Set Slack token fact
+  set_fact:
+    vault_slack_token: "{{ slack_creds.data.data.webhook_token }}"

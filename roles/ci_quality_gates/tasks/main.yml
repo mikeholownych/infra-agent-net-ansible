@@ -1,0 +1,40 @@
+- name: Install Checkov
+  pip:
+    name: checkov
+    state: latest
+
+- name: Install Trivy
+  get_url:
+    url: "https://github.com/aquasecurity/trivy/releases/download/{{ trivy_version }}/trivy_{{ trivy_version }}_Linux-64bit.tar.gz"
+    dest: /tmp/trivy.tar.gz
+  args:
+    creates: /usr/local/bin/trivy
+
+- name: Unarchive Trivy
+  unarchive:
+    src: /tmp/trivy.tar.gz
+    dest: /usr/local/bin/
+    remote_src: yes
+
+- name: Install OPA CLI
+  get_url:
+    url: "https://openpolicyagent.org/downloads/{{ opa_version }}/opa_linux_amd64_static"
+    dest: /usr/local/bin/opa
+    mode: '0755'
+
+- name: Run Checkov scan on IaC
+  shell: checkov -d . --quiet
+  register: checkov_results
+  failed_when: checkov_results.rc != 0
+
+- name: Run OPA policy evaluation
+  shell: opa eval --format pretty --input . --data policies/
+  args:
+    chdir: .
+  register: opa_results
+  failed_when: opa_results.rc != 0
+
+- name: Run Trivy image scan
+  shell: trivy image {{ docker_image }} --exit-code 1
+  register: trivy_results
+  failed_when: trivy_results.rc != 0

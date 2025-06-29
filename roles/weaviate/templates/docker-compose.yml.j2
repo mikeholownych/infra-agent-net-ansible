@@ -1,0 +1,8 @@
+version: "3.8"
+services:
+  weaviate:
+    image: semitechnologies/weaviate:1.18.6
+    environment:
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: /var/lib/weaviate
+    ports: ["8080:8080"]

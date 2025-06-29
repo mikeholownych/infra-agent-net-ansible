@@ -1,0 +1,13 @@
+- name: Install ACME client
+  apt: name=certbot state=latest update_cache=yes
+
+- name: Obtain cert for orchestrator
+  community.general.acme_certificate:
+    account_key_src: /etc/ssl/private/ansible.pem
+    cert_name: orchestrator
+    csr: none
+    dest: /etc/ssl/certs/orchestrator.crt
+    key_dest: /etc/ssl/private/orchestrator.key
+    issuer: letsencrypt
+    domains: ["api.example.com"]
+    dns_plugin: cloudflare

@@ -1,0 +1,15 @@
+- name: Install apt prerequisites
+  apt: update_cache=yes name=[apt-transport-https,ca-certificates,curl,gnupg,lsb-release] state=latest
+
+- name: Add Docker’s GPG key
+  apt_key: url=https://download.docker.com/linux/ubuntu/gpg state=present
+
+- name: Add Docker repo
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+- name: Install Docker & Compose
+  apt: name=[docker-ce,docker-ce-cli,containerd.io,compose-plugin] state=latest update_cache=yes
+
+- name: Ensure Docker running
+  service: name=docker state=started enabled=yes

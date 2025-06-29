@@ -1,0 +1,9 @@
+- name: Restart Fluentd
+  service:
+    name: fluentd
+    state: restarted
+
+- name: Restart auditd
+  service:
+    name: auditd
+    state: restarted

@@ -1,0 +1,34 @@
+- name: Apply sysctl tuning for network performance
+  sysctl:
+    name: '{{ item.name }}'
+    value: '{{ item.value }}'
+    sysctl_set: yes
+    state: present
+  loop:
+    - { name: 'net.core.somaxconn', value: '1024' }
+    - { name: 'net.ipv4.tcp_tw_reuse', value: '1' }
+    - { name: 'vm.swappiness', value: '10' }
+
+- name: Ensure AppArmor is installed and enforcing
+  apt:
+    name: apparmor
+    state: latest
+  notify: Reload AppArmor
+
+- name: Enforce CIS benchmark for SSH
+  copy:
+    src: templates/sshd_config_cis
+    dest: /etc/ssh/sshd_config
+    mode: '0600'
+  notify: Restart SSH
+
+- name: Lock down Docker daemon options
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "icc": false,
+        "userns-remap": "default",
+        "no-new-privileges": true
+      }
+  notify: Restart Docker

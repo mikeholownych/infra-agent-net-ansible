@@ -1,0 +1,12 @@
+- name: Copy Celery code
+  git: repo=https://github.com/org/celery.git dest=/srv/celery version=main
+
+- name: Render docker-compose
+  template: src=templates/docker-compose.yml.j2 dest=/srv/celery/docker-compose.yml
+
+- name: Deploy Celery
+  community.docker.docker_compose:
+    project_src: /srv/celery state=present detached=yes
+
+- name: Wait for Celery worker port
+  wait_for: host={{ inventory_hostname }} port=5555 timeout=60

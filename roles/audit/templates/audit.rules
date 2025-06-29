@@ -1,0 +1,4 @@
+## Track changes to /etc
+-w /etc -p wa -k etc_changes
+## Monitor failed login attempts
+-w /var/log/faillog -p wa -k auth_failures

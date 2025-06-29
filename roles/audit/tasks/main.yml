@@ -1,0 +1,34 @@
+- name: Install OpenPolicyAgent CLI
+  get_url:
+    url: "https://openpolicyagent.org/downloads/{{ opa_version }}/opa_linux_amd64"
+    dest: /usr/local/bin/opa
+    mode: '0755'
+
+- name: Deploy OPA policy server container
+  community.docker.docker_compose:
+    project_src: /srv/audit
+    state: present
+
+- name: Load policies into OPA
+  shell: opa push ./policies
+  args:
+    chdir: /srv/audit
+
+- name: Configure Fluentd for Ansible log forwarding
+  template:
+    src: templates/fluentd.conf.j2
+    dest: /etc/fluentd/fluentd.conf
+  notify: Restart Fluentd
+
+- name: Ensure auditd is installed and enabled
+  apt:
+    name: auditd
+    state: latest
+  notify: Restart auditd
+
+- name: Deploy audit rules
+  copy:
+    src: templates/audit.rules
+    dest: /etc/audit/rules.d/audit.rules
+    mode: '0640'
+  notify: Restart auditd

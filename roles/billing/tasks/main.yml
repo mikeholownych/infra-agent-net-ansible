@@ -1,0 +1,12 @@
+- name: Clone billing service
+  git: repo=https://github.com/org/billing.git dest=/srv/billing version=main
+
+- name: Render docker-compose
+  template: src=templates/docker-compose.yml.j2 dest=/srv/billing/docker-compose.yml
+
+- name: Deploy billing
+  community.docker.docker_compose:
+    project_src: /srv/billing state=present
+
+- name: Wait for billing
+  wait_for: host={{ inventory_hostname }} port=8001 timeout=60

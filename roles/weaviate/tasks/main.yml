@@ -1,0 +1,6 @@
+- name: Deploy Weaviate
+  community.docker.docker_compose:
+    project_src: /srv/weaviate state=present
+
+- name: Wait for Weaviate
+  wait_for: host={{ inventory_hostname }} port=8080 timeout=60

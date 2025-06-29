@@ -1,0 +1,10 @@
+site_name: Ethical AI Platform Docs
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - Roles:
+    {% for role in lookup('fileglob', 'roles/*/README.md') | map('basename') %}
+    - {{ role }}: {{ role }}/README.md
+    {% endfor %}
+theme:
+  name: material

@@ -1,0 +1,12 @@
+- name: Clone frontend repo
+  git: repo=https://github.com/org/frontend.git dest=/srv/frontend version=main
+
+- name: Render docker-compose
+  template: src=templates/docker-compose.yml.j2 dest=/srv/frontend/docker-compose.yml
+
+- name: Deploy frontend
+  community.docker.docker_compose:
+    project_src: /srv/frontend state=present
+
+- name: Wait for frontend
+  wait_for: host={{ inventory_hostname }} port=3000 timeout=60

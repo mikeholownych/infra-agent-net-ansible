@@ -1,0 +1,28 @@
+- name: Ensure Ansible is installed for local drift checks
+  package:
+    name: ansible-core
+    state: present
+
+- name: Create drift detection playbook wrapper script
+  copy:
+    dest: /usr/local/bin/drift_detect.sh
+    mode: '0755'
+    content: |
+      #!/usr/bin/env bash
+      LOG_DIR=/var/log/ansible
+      mkdir -p "$LOG_DIR"
+      TIMESTAMP=$(date +"%Y%m%d-%H%M")
+      LOG_FILE="$LOG_DIR/drift_$TIMESTAMP.log"
+      ansible-playbook -i /usr/local/bin/proxmox_inventory.py playbook.yml --check --diff &> "$LOG_FILE"
+      if grep -q "changed=\"[1-9]" "$LOG_FILE"; then
+        echo "Drift detected, applying remediation..."
+        ansible-playbook -i /usr/local/bin/proxmox_inventory.py playbook.yml &>> "$LOG_FILE"
+      else
+        echo "No drift detected." &>> "$LOG_FILE"
+      fi
+
+- name: Schedule drift detection every hour
+  cron:
+    name: "Ansible Drift Detection & Remediation"
+    minute: 0
+    job: "/usr/local/bin/drift_detect.sh"

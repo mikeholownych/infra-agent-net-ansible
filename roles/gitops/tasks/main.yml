@@ -1,0 +1,34 @@
+- name: Install ArgoCD CLI
+  get_url:
+    url: "https://github.com/argoproj/argo-cd/releases/download/{{ argocd_version }}/argocd-linux-amd64"
+    dest: /usr/local/bin/argocd
+    mode: '0755'
+
+- name: Login to ArgoCD
+  shell: |
+    argocd login {{ argocd_server }} \
+      --username {{ vault_argocd_user }} \
+      --password {{ vault_argocd_password }} \
+      --insecure
+  environment:
+    ARGOCD_OPTS: --plaintext
+  args:
+    warn: false
+
+- name: Create GitOps application in ArgoCD
+  shell: |
+    argocd app create ethical-ai-platform \
+      --repo {{ git_repo_url }} \
+      --path . \
+      --dest-server https://kubernetes.default.svc \
+      --dest-namespace default \
+      --sync-policy automated \
+      --self-heal
+  args:
+    creates: /var/lib/argocd/applications/ethical-ai-platform
+
+- name: Sync ArgoCD application
+  shell: |
+    argocd app sync ethical-ai-platform
+  register: sync_result
+  failed_when: sync_result.rc != 0

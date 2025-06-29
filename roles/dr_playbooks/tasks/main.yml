@@ -1,0 +1,36 @@
+- name: Include DR site variables
+  include_vars:
+    file: "site_vars/dr.yml"
+    name: dr_vars
+
+- name: Restore latest Postgres backup to DR database
+  shell: |
+    latest=$(ls -t /backups/ai_memory_*.sql | head -n 1)
+    PGPASSWORD={{ dr_vars.db_password }} psql -h {{ dr_vars.db_host }} -U {{ dr_vars.db_user }} -c "DROP DATABASE IF EXISTS ai_memory; CREATE DATABASE ai_memory;"
+    PGPASSWORD={{ dr_vars.db_password }} pg_restore -h {{ dr_vars.db_host }} -U {{ dr_vars.db_user }} -d ai_memory "$latest"
+  args:
+    executable: /bin/bash
+
+- name: Deploy Orchestrator to DR cluster
+  community.docker.docker_compose:
+    project_src: /srv/orchestrator_dr
+    state: present
+  vars:
+    inventory_hostname: {{ dr_vars.orchestrator_host }}
+
+- name: Sync ArgoCD application in DR
+  shell: |
+    argocd app sync ethical-ai-platform-dr
+  environment:
+    ARGOCD_OPTS: --plaintext
+  args:
+    warn: false
+
+- name: Verify DR orchestrator health
+  uri:
+    url: "http://{{ dr_vars.orchestrator_host }}:8000/readyz"
+    status_code: 200
+  retries: 5
+  delay: 15
+  register: dr_health
+  until: dr_health.status == 200

@@ -1,0 +1,27 @@
+- name: Provision infrastructure
+  hosts: proxmox
+  gather_facts: no
+  tasks:
+    - import_role:
+        name: provisioning
+      tags: [template, lxc, vm]
+
+- name: Configure hosts and deploy services
+  hosts: orchestrator:celery:db:weaviate:redis:n8n:observability:frontend:billing
+  gather_facts: yes
+  roles:
+    - docker
+    - security
+    - orchestrator
+    - celery
+    - db
+    - weaviate
+    - redis
+    - n8n
+    - observability
+    - frontend
+    - billing
+    - backups
+    - smoke_tests
+    - rbac
+    - ci_cd

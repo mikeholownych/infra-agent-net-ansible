@@ -1,0 +1,80 @@
+- name: Ensure LXC template exists (template)
+  tags: template
+  delegate_to: proxmox
+  shell: |
+    if ! pveam list local | grep -q "ubuntu-20.04-standard"; then
+      pveam download local ubuntu-20.04-standard_20.04-2_amd64
+    fi
+  args: {executable: /bin/bash}
+
+- name: Ensure ISO is downloaded (template)
+  tags: template
+  delegate_to: proxmox
+  shell: |
+    if [ ! -f "{{ vm_iso }}" ]; then
+      wget -O "{{ vm_iso }}" https://releases.ubuntu.com/20.04/ubuntu-20.04-live-server-amd64.iso
+    fi
+  args: {executable: /bin/bash}
+
+- name: Provision LXC containers (lxc)
+  tags: lxc
+  community.general.proxmox:
+    api_host: "{{ pve_host }}"
+    api_user: "{{ pve_user }}"
+    api_password: "{{ pve_password }}"
+    vmid: "{{ hostvars[item].vmid }}"
+    node: pve
+    hostname: "{{ item }}"
+    ostemplate: "{{ lxc_template }}"
+    storage: "{{ storage }}"
+    password: "changeme"
+    memory: 2048
+    cores: 2
+    netif:
+      - name: eth0
+        bridge: vmbr0
+        ip: "{{ hostvars[item].ip }}/24"
+        gw: "192.168.100.1"
+    swap: 1024
+    state: present
+  loop: "{{ groups['all'] | difference(['proxmox']) }}"
+  ignore_errors: yes
+
+- name: Provision QEMU VMs (vm)
+  tags: vm
+  community.general.proxmox:
+    api_host: "{{ pve_host }}"
+    api_user: "{{ pve_user }}"
+    api_password: "{{ pve_password }}"
+    vmid: "{{ hostvars[item].vmid }}"
+    node: pve
+    name: "{{ item }}"
+    vm_type: qemu
+    iso: "{{ vm_iso }}"
+    cloudinit: yes
+    cores: 2
+    memory: 4096
+    netif:
+      - name: net0
+        bridge: vmbr0
+        ip: "{{ hostvars[item].ip }}/24"
+        gw: "192.168.100.1"
+    scsi0: "{{ storage }}:32"
+    scsihw: virtio-scsi-pci
+    ide2: "local:cloudinit"
+    boot: c
+    state: present
+  loop: "{{ groups['all'] | difference(['proxmox']) }}"
+  ignore_errors: yes
+
+- name: Start all nodes (always)
+  tags: [lxc,vm]
+  community.general.proxmox:
+    api_host: "{{ pve_host }}"
+    api_user: "{{ pve_user }}"
+    api_password: "{{ pve_password }}"
+    vmid: "{{ hostvars[item].vmid }}"
+    node: pve
+    state: started
+  loop: "{{ groups['all'] | difference(['proxmox']) }}"
+  ignore_errors: yes

@@ -1,0 +1,6 @@
+- name: Deploy Redis
+  community.docker.docker_compose:
+    project_src: /srv/redis state=present
+
+- name: Wait for Redis
+  wait_for: host={{ inventory_hostname }} port=6379 timeout=60

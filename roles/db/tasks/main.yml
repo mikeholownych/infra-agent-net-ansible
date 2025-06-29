@@ -1,0 +1,6 @@
+- name: Deploy Postgres
+  community.docker.docker_compose:
+    project_src: /srv/db state=present
+
+- name: Wait for Postgres
+  wait_for: host={{ inventory_hostname }} port=5432 delay=10 timeout=60

@@ -1,0 +1,33 @@
+- name: Determine current active color
+  command: "loadbalancer-cli status"
+  register: lb_status
+
+- name: Set target color
+  set_fact:
+    target_color: "{{ 'green' if lb_status.stdout == 'blue' else 'blue' }}"
+
+- name: Deploy application stack to target color namespace
+  community.docker.docker_compose:
+    project_name: "app_{{ target_color }}"
+    project_src: /srv/orchestrator
+    state: present
+    env:
+      DEPLOY_ENV: "{{ target_color }}"
+
+- name: Wait for target environment to become healthy
+  uri:
+    url: "http://{{ inventory_hostname }}:8000/health?env={{ target_color }}"
+    status_code: 200
+  register: health_check
+  until: health_check.status == 200
+  retries: 10
+  delay: 10
+
+- name: Switch load balancer to target color
+  command: "loadbalancer-cli switch --to {{ target_color }}"
+
+- name: Teardown old color environment
+  community.docker.docker_compose:
+    project_name: "app_{{ 'blue' if target_color == 'green' else 'green' }}"
+    project_src: /srv/orchestrator
+    state: absent

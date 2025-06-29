@@ -1,0 +1,2 @@
+# Default variables for the multi_site role
+site_name: ""  # TODO: set site_name

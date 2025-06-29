@@ -1,0 +1,31 @@
+- name: Deploy billing metrics exporter
+  community.docker.docker_compose:
+    project_src: /srv/billing_exporter
+    state: present
+
+- name: Configure Prometheus scrape config for billing metrics
+  blockinfile:
+    path: /srv/observability/prometheus/prometheus.yml
+    marker: "# {mark} billing_exporter"
+    block: |
+      - job_name: 'billing_exporter'
+        static_configs:
+          - targets: ['localhost:9100']
+
+- name: Reload Prometheus to apply new scrape config
+  community.docker.docker_compose:
+    project_src: /srv/observability
+    state: present
+
+- name: Compute and record usage per team
+  shell: |
+    python3 /srv/billing_exporter/calculate_usage.py --output /var/metrics/usage_team.json
+  args:
+    chdir: /srv/billing_exporter
+
+- name: Push usage metrics to Prometheus Pushgateway
+  uri:
+    url: http://localhost:9091/metrics/job/billing/instance/{{ inventory_hostname }}
+    method: PUT
+    body: "$(cat /var/metrics/usage_team.json)"
+    status_code: 202

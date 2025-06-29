@@ -1,0 +1,4 @@
+# Default variables for the audit role
+siem_host: ""  # TODO: set siem_host
+siem_port: ""  # TODO: set siem_port
+opa_version: ""  # TODO: set opa_version

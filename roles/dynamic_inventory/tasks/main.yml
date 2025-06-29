@@ -1,0 +1,44 @@
+- name: Install Proxmox API dynamic inventory plugin
+  pip:
+    name: proxmoxer
+    state: latest
+
+- name: Create dynamic inventory script
+  copy:
+    dest: /usr/local/bin/proxmox_inventory.py
+    mode: '0755'
+    content: |
+      #!/usr/bin/env python3
+      import json
+      from proxmoxer import ProxmoxAPI
+      import os
+
+      pve_host = os.getenv('PVE_HOST')
+      pve_user = os.getenv('PVE_USER')
+      pve_pass = os.getenv('PVE_PASS')
+      proxmox = ProxmoxAPI(pve_host, user=pve_user, password=pve_pass, verify_ssl=False)
+
+      inventory = {'_meta': {'hostvars': {}}, 'all': {'hosts': []}}
+      for node in proxmox.nodes.get():
+          for vm in proxmox.nodes(node['node']).qemu.get():
+              name = vm['name']
+              ip = None
+              # Attempt to fetch IP from guest agent
+              try:
+                  info = proxmox.nodes(node['node']).qemu(vm['vmid']).agent.get('network-get-interfaces')
+                  for iface in info['result']['interfaces']:
+                      if iface.get('ip-addresses'):
+                          ip = iface['ip-addresses'][0]['ip-address']
+                          break
+              except Exception:
+                  pass
+              if name and ip:
+                  inventory['all']['hosts'].append(name)
+                  inventory['_meta']['hostvars'][name] = {'ansible_host': ip}
+      print(json.dumps(inventory))
+
+- name: Configure Ansible to use dynamic inventory
+  lineinfile:
+    path: ansible.cfg
+    regexp: '^inventory'
+    line: 'inventory = /usr/local/bin/proxmox_inventory.py'

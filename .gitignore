@@ -1,0 +1,12 @@
+# Ansible
+*.retry
+.vault_pass.txt
+# Python cache
+__pycache__/
+*.py[cod]
+# Vault identity files
+.ansible_vault.*
+# SSH keys, logs, local overrides
+*.log
+*.pem
+local_override.yml

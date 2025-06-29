@@ -1,0 +1,4 @@
+# Default variables for the ci_quality_gates role
+trivy_version: ""  # TODO: set trivy_version
+opa_version: ""  # TODO: set opa_version
+docker_image: ""  # TODO: set docker_image

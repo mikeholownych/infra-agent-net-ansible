@@ -1,0 +1,7 @@
+# Default variables for the provisioning role
+vm_iso: ""  # TODO: set vm_iso
+lxc_template: ""  # TODO: set lxc_template
+storage: ""  # TODO: set storage
+pve_host: ""  # TODO: set pve_host
+pve_user: ""  # TODO: set pve_user
+pve_password: ""  # TODO: set pve_password

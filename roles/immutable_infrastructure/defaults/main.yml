@@ -1,0 +1,5 @@
+# Default variables for the immutable_infrastructure role
+packer_version: ""  # TODO: set packer_version
+pve_host: ""  # TODO: set pve_host
+pve_user: ""  # TODO: set pve_user
+pve_password: ""  # TODO: set pve_password

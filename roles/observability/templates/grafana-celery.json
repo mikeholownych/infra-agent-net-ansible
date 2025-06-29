@@ -1,0 +1,24 @@
+{
+  "id": null,
+  "title": "Celery Worker Dashboard",
+  "schemaVersion": 27,
+  "version": 1,
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Tasks Processed/sec",
+      "targets": [
+        { "expr": "rate(celery_task_processed_total{job=\"celery-worker\"}[1m])" }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 }
+    },
+    {
+      "type": "graph",
+      "title": "Avg Task Duration",
+      "targets": [
+        { "expr": "rate(celery_task_runtime_sum{job=\"celery-worker\"}[5m]) / rate(celery_task_runtime_count{job=\"celery-worker\"}[5m])" }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 }
+    }
+  ]
+}

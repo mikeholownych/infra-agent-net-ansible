@@ -1,0 +1,6 @@
+version: "3.8"
+services:
+  celery:
+    image: myrepo/celery-worker:latest
+    env_file: .env
+    command: celery -A tasks worker --loglevel=info

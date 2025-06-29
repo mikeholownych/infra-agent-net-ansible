@@ -1,0 +1,12 @@
+- name: Enable UFW
+  ufw: state=enabled logging=on
+
+- name: Allow OpenSSH
+  ufw: rule=allow proto=tcp to_port=22
+
+- name: Allow service ports
+  ufw: rule=allow proto=tcp to_port=8000 comment="Orchestrator"
+- ufw: rule=allow proto=tcp to_port=5678 comment="n8n"
+- ufw: rule=allow proto=tcp to_port=3000 comment="Grafana"
+- ufw: rule=allow proto=tcp to_port=9090 comment="Prometheus"
+- ufw: rule=allow proto=tcp to_port=3001 comment="Frontend"

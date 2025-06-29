@@ -1,0 +1,4 @@
+# Default variables for the secrets_management role
+vault_addr: ""  # TODO: set vault_addr
+vault_token: ""  # TODO: set vault_token
+vault_version: ""  # TODO: set vault_version

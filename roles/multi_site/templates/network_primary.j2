@@ -1,0 +1,6 @@
+# Primary site network config
+auto eth0
+iface eth0 inet static
+  address {{ site_vars.primary.ip }}
+  netmask 255.255.255.0
+  gateway {{ site_vars.primary.gateway }}

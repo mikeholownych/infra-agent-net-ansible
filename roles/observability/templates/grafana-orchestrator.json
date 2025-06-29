@@ -1,0 +1,24 @@
+{
+  "id": null,
+  "title": "Orchestrator Dashboard",
+  "schemaVersion": 27,
+  "version": 1,
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Orchestrator Request Rate",
+      "targets": [
+        { "expr": "rate(http_server_requests_seconds_count{job=\"orchestrator\"}[1m])" }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 }
+    },
+    {
+      "type": "graph",
+      "title": "Orchestrator Latency p95",
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job=\"orchestrator\"}[5m])) by (le))" }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 }
+    }
+  ]
+}

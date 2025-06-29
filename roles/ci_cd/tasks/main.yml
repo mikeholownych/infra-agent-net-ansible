@@ -1,0 +1,5 @@
+- name: Run Ansible Lint
+  shell: ansible-lint -v
+
+- name: Run Molecule tests
+  shell: molecule test

@@ -1,0 +1,21 @@
+# Global variables for all hosts
+vault_addr: https://vault.example.com
+vault_token: {{ vault_token | default('changeme', true) }}
+argocd_server: https://argocd.example.com
+argocd_version: v2.7.7
+git_repo_url: https://github.com/org/ethical-ai-platform.git
+pipeline_api_url: https://ci.example.com/api
+portal_repo_url: https://github.com/org/self-service-portal.git
+portal_version: main
+portal_port: 4000
+trivy_version: 0.36.1
+opa_version: 1.3.0
+docker_image: myrepo/app:latest
+PVE_HOST: pve.example.com
+PVE_USER: ansible
+PVE_PASS: {{ vault_pve_pass }}
+siem_host: siem.example.com
+siem_port: 24224
+
+# Default site_name for network templates
+site_name: primary

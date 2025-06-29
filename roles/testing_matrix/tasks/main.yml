@@ -1,0 +1,29 @@
+- name: Install Molecule and test dependencies
+  pip:
+    name:
+      - molecule
+      - testinfra
+      - docker
+    state: latest
+
+- name: Initialize Molecule scenario for each OS
+  shell: |
+    for scenario in ubuntu2004 ubuntu2204 centos8; do
+      molecule init scenario -r {{ role_name }} -d docker $scenario;
+    done
+  args:
+    chdir: roles/{{ role_name }}
+
+- name: Run Molecule tests for all scenarios
+  shell: |
+    for scenario in ubuntu2004 ubuntu2204 centos8; do
+      molecule test -s $scenario;
+    done
+  args:
+    chdir: roles/{{ role_name }}
+
+- name: Execute integration tests against Proxmox lab
+  shell: |
+    pytest tests/integration --hosts=dynamic_inventory.py
+  args:
+    chdir: tests

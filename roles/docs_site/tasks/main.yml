@@ -1,0 +1,32 @@
+- name: Install MkDocs and Material theme
+  pip:
+    name:
+      - mkdocs
+      - mkdocs-material
+    state: latest
+
+- name: Copy mkdocs configuration
+  template:
+    src: mkdocs.yml.j2
+    dest: /srv/docs/mkdocs.yml
+    mode: '0644'
+
+- name: Copy documentation from README.md files
+  synchronize:
+    src: ./
+    dest: /srv/docs/docs
+    rsync_opts:
+      - "--include=*/"
+      - "--include=README.md"
+      - "--exclude=*"
+
+- name: Build MkDocs site
+  shell: |
+    mkdocs build --site-dir /srv/docs/site
+  args:
+    chdir: /srv/docs
+
+- name: Deploy documentation to web server
+  community.docker.docker_compose:
+    project_src: /srv/docs
+    state: present

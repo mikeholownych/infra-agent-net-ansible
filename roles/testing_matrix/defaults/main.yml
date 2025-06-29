@@ -1,0 +1,2 @@
+# Default variables for the testing_matrix role
+role_name: ""  # TODO: set role_name

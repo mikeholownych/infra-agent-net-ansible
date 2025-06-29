@@ -1,0 +1,28 @@
+- name: Clone Self-Service Portal repository
+  git:
+    repo: "{{ portal_repo_url }}"
+    dest: "/srv/self_service_portal"
+    version: "{{ portal_version }}"
+
+- name: Copy environment file for portal
+  template:
+    src: env.j2
+    dest: "/srv/self_service_portal/.env"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Build and deploy portal via Docker Compose
+  community.docker.docker_compose:
+    project_src: /srv/self_service_portal
+    state: present
+    restarted: yes
+
+- name: Wait for portal to be available
+  uri:
+    url: "http://{{ hostvars[inventory_hostname].ansible_host }}:{{ portal_port }}"
+    status_code: 200
+  register: portal_health
+  until: portal_health.status == 200
+  retries: 15
+  delay: 10

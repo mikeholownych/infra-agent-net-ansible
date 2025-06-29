@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+scrape_configs:
+  - job_name: 'orchestrator'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['{{ hostvars[''orchestrator-01''].ip }}:8000']
+  - job_name: 'celery'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['{{ hostvars[''celery-01''].ip }}:5555']
+  - job_name: 'postgres'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['{{ hostvars[''db-01''].ip }}:9187']
+  - job_name: 'weaviate'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['{{ hostvars[''weaviate-01''].ip }}:8080']
+  - job_name: 'n8n'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['{{ hostvars[''n8n-01''].ip }}:5678']

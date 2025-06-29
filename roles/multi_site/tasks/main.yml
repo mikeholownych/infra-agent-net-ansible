@@ -1,0 +1,22 @@
+- name: Load site-specific variables
+  include_vars:
+    file: "site_vars/{{ site_name }}.yml"
+    name: site_vars
+
+- name: Set inventory group for primary or DR sites
+  add_host:
+    name: "{{ site_vars.primary.cluster_name }}"
+    groups: primary_site
+
+- name: Add DR site hosts
+  add_host:
+    name: "{{ site_vars.dr.cluster_name }}"
+    groups: dr_site
+
+- name: Configure site-specific network settings
+  template:
+    src: templates/network_{{ site_name }}.j2
+    dest: /etc/network/interfaces.d/{{ site_name }}.cfg
+
+- name: Deploy playbook for all sites
+  ansible.builtin.meta: flush_handlers

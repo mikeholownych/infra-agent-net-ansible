@@ -1,0 +1,14 @@
+<source>
+  @type tail
+  path /var/log/ansible/*.log
+  pos_file /var/log/fluentd-pos/ansible.pos
+  tag ansible.log
+  format none
+</source>
+<match ansible.log>
+  @type forward
+  <server>
+    host {{ siem_host }}
+    port {{ siem_port }}
+  </server>
+</match>

@@ -1,0 +1,2 @@
+# Default variables for the blue_green role
+target_color: ""  # TODO: set target_color

@@ -1,0 +1,7 @@
+# CIS SSHD hardening
+Protocol 2
+PermitRootLogin no
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+UsePAM yes
+X11Forwarding no

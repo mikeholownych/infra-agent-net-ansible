@@ -1,0 +1,40 @@
+- name: Install Packer
+  get_url:
+    url: "https://releases.hashicorp.com/packer/{{ packer_version }}/packer_{{ packer_version }}_linux_amd64.zip"
+    dest: /tmp/packer.zip
+
+- name: Unzip Packer
+  unarchive:
+    src: /tmp/packer.zip
+    dest: /usr/local/bin/
+    remote_src: yes
+
+- name: Create Packer template for LXC
+  copy:
+    dest: /srv/packer/lxc_template.json
+    content: |
+      {
+        "builders": [{
+          "type": "proxmox",
+          "node": "pve",
+          "template": "ubuntu-20.04-standard_20.04-2_amd64",
+          "vm_id": 9000,
+          "disk_size": "8G",
+          "memory": "2048",
+          "cores": 2,
+          "ssh_username": "root",
+          "ssh_password": "changeme"
+        }],
+        "provisioners": [
+          {"type": "shell", "inline": ["apt-get update", "apt-get upgrade -y"]}
+        ]
+      }
+
+- name: Build LXC golden image
+  shell: |
+    packer build -var "proxmox_api_url={{ pve_host }}" \
+                  -var "proxmox_user={{ pve_user }}" \
+                  -var "proxmox_password={{ pve_password }}" \
+                  /srv/packer/lxc_template.json
+  args:
+    chdir: /srv/packer

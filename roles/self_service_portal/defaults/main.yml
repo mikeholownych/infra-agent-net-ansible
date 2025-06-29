@@ -1,0 +1,7 @@
+# Default variables for the self_service_portal role
+argocd_server: ""  # TODO: set argocd_server
+portal_port: ""  # TODO: set portal_port
+vault_addr: ""  # TODO: set vault_addr
+portal_repo_url: ""  # TODO: set portal_repo_url
+pipeline_api_url: ""  # TODO: set pipeline_api_url
+portal_version: ""  # TODO: set portal_version

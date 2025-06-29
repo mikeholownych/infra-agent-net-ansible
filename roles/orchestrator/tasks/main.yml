@@ -1,0 +1,19 @@
+- name: Clone orchestrator repo
+  git: repo=https://github.com/org/orchestrator.git dest=/srv/orchestrator version=main
+
+- name: Template .env
+  template: src=../../../group_vars/all.yml dest=/srv/orchestrator/.env
+
+- name: Render docker-compose
+  template: src=templates/docker-compose.yml.j2 dest=/srv/orchestrator/docker-compose.yml
+
+- name: Deploy orchestrator
+  community.docker.docker_compose:
+    project_src: /srv/orchestrator state=present pull=yes detached=yes
+
+- name: Wait for orchestrator readiness
+  wait_for: host={{ inventory_hostname }} port=8000 timeout=120
+
+- name: Check /readyz
+  uri: url=http://{{ inventory_hostname }}:8000/readyz status_code=200
+  retries:5 delay:10 until: result.status == 200

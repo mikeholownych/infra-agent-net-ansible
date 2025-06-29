@@ -1,0 +1,6 @@
+# Default variables for the gitops role
+argocd_server: ""  # TODO: set argocd_server
+argocd_version: ""  # TODO: set argocd_version
+git_repo_url: ""  # TODO: set git_repo_url
+vault_argocd_user: ""  # TODO: set vault_argocd_user
+vault_argocd_password: ""  # TODO: set vault_argocd_password

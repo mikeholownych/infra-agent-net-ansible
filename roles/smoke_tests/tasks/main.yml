@@ -1,0 +1,13 @@
+- name: Smoke test orchestrator
+  uri: url=http://{{ hostvars['orchestrator-01'].ip }}:8000/run/ethical_insider 
+       method=POST body='{"input":"health check"}' return_content=yes status_code=200
+
+- name: Smoke test DB entry
+  shell: |
+    PGPASSWORD=ai psql -h {{ hostvars['db-01'].ip }} -U ai -d ai_memory -c "SELECT COUNT(*) FROM runs;"
+  register: db_count
+  failed_when: db_count.stdout is not match("[0-9]+")
+
+- name: Smoke test Weaviate
+  uri: url=http://{{ hostvars['weaviate-01'].ip }}:8080/v1/.well-known/ready 
+       status_code=200
