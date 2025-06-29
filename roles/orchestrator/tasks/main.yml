@@ -15,5 +15,10 @@
   wait_for: host={{ inventory_hostname }} port=8000 timeout=120
 
 - name: Check /readyz
-  uri: url=http://{{ inventory_hostname }}:8000/readyz status_code=200
-  retries:5 delay:10 until: result.status == 200
+  uri:
+    url: http://{{ inventory_hostname }}:8000/readyz
+    status_code: 200
+  register: result
+  retries: 5
+  delay: 10
+  until: result.status == 200
